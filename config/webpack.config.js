@@ -6,12 +6,12 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
     'entry': {
-        'index': [ path.resolve(__dirname, './index.js') ]
+        'index': [ path.resolve(__dirname, '../src/index.js') ]
     },
     'output': {
         'path': path.resolve(__dirname, './dist/[hash]'),
-        'filename': '[name].[chunkhash].js',
-        'sourceMapFilename': '[name].[chunkhash].js.map'
+        'filename': '[name].js',
+        'sourceMapFilename': '[name].js.map'
     },
     'devtool': 'source-map',
     'resolve': {
@@ -47,7 +47,7 @@ module.exports = {
                 loader: 'url',
                 query: {
                     limit: 10000,
-                    name: 'assets/[name].[hash:7].[ext]'
+                    name: 'assets/[name].[ext]'
                 }
             },
             {
@@ -58,7 +58,7 @@ module.exports = {
         ]
     },
     'plugins': [
-        new ExtractTextPlugin('[name].[hash].css'),
+        new ExtractTextPlugin('[name].css'),
         //new webpack.optimize.CommonsChunkPlugin({
             //name: 'config',
             //chunks: ['config', 'app'],

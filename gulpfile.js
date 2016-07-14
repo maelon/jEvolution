@@ -6,33 +6,65 @@ const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const fs = require('fs');
 
-const webpackConfig = require('./webpack.config.js');
+const webpackConfig = require('./config/webpack.config.js');
 
+const vlistPath = './dist/vlist.json';
 let versionHash = '';
 let versionTime = 0;
 
-gulp.task('default', ['build', 'updateVersionList'], (error, result) => {
+const getCacheFiles = (pwd) => {
+    const cacheFiles = [];
+
+    const iterateFiles = (dir) => {
+        const files = fs.readdirSync(dir);
+        for(let i = 0 ; i < files.length; i++) {
+            const stat = fs.statSync(dir + files[i]);
+            if(stat.isFile()) {
+                if((/.(html|js(x|.map)?|css)$/i).test(files[i])) {
+                    cacheFiles.push(files[i]);
+                }
+            } else if(stat.isDirectory()){
+                iterateFiles(dir + files[i]);
+            }
+        }
+    }
+    iterateFiles(pwd);
+
+    return cacheFiles;
+};
+
+gulp.task('default', ['build', 'makeVInfo', 'updateVList'], (error, result) => {
     if(!error) console.log('build complete');
 });
 
 gulp.task('build', endcall => {
     webpack(webpackConfig, (error, result) => {
-        console.log('build', result.hash);
         versionHash = result.hash;
         versionTime = (new Date()).getTime();
         endcall();
     });
 });
 
-gulp.task('updateVersionList', ['build'],  endcall => {
-    console.log('updateVersionList', versionHash, versionTime);
-    fs.stat('./dist/vlist.json', (error, result) => {
+gulp.task('makeVInfo', ['build'], endcall => {
+    const fd = fs.openSync(`./dist/${ versionHash }/vinfo.json`, 'w+');
+    fs.closeSync(fd);
+    const vinfo = {};
+    vinfo['buildHash'] = versionHash;
+    vinfo['buildDate'] = versionTime;
+    vinfo['buildVersion'] = '';
+    vinfo['cacheList'] = getCacheFiles(`./dist/${ versionHash }/`);
+    fs.writeFileSync(`./dist/${ versionHash }/vinfo.json`, JSON.stringify(vinfo, null, '\t'), 'utf8');
+    endcall();
+});
+
+gulp.task('updateVList', ['build', 'makeVInfo'],  endcall => {
+    fs.stat(vlistPath, (error, result) => {
         if(error) {
-            const fd = fs.openSync('./dist/vlist.json', 'w+');
+            const fd = fs.openSync(vlistPath, 'w+');
             fs.closeSync(fd);
         }
 
-        const content = fs.readFileSync('./dist/vlist.json', 'utf8');
+        const content = fs.readFileSync(vlistPath, 'utf8');
         let vlist;
         if(content) {
             vlist = JSON.parse(content);
@@ -58,8 +90,7 @@ gulp.task('updateVersionList', ['build'],  endcall => {
         }
 
         vlist['latestHash'] = versionHash;
-        vlist['latestDate'] = versionTime;
-        fs.writeFileSync('./dist/vlist.json', JSON.stringify(vlist, null, '\t'), 'utf8');
+        fs.writeFileSync(vlistPath, JSON.stringify(vlist, null, '\t'), 'utf8');
 
         endcall();
     });
