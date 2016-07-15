@@ -5,8 +5,9 @@ const gutil = require('gulp-util');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const fs = require('fs');
+var exec = require('child_process').exec;
 
-const webpackConfig = require('./config/webpack.config.js');
+const webpackConfig = require('./config/webpack.build.config.js');
 
 const vlistPath = './dist/vlist.json';
 let versionHash = '';
@@ -18,13 +19,16 @@ const getCacheFiles = (pwd) => {
     const iterateFiles = (dir) => {
         const files = fs.readdirSync(dir);
         for(let i = 0 ; i < files.length; i++) {
-            const stat = fs.statSync(dir + files[i]);
-            if(stat.isFile()) {
-                if((/.(html|js(x|.map)?|css)$/i).test(files[i])) {
-                    cacheFiles.push(files[i]);
+            try {
+                const stat = fs.statSync(dir + files[i]);
+                if(stat.isFile()) {
+                    if((/.(html|js(x|.map)?|css)$/i).test(files[i])) {
+                        cacheFiles.push(files[i]);
+                    }
+                } else if(stat.isDirectory()){
+                    iterateFiles(dir + files[i]);
                 }
-            } else if(stat.isDirectory()){
-                iterateFiles(dir + files[i]);
+            } catch(e) {
             }
         }
     }
@@ -33,7 +37,7 @@ const getCacheFiles = (pwd) => {
     return cacheFiles;
 };
 
-gulp.task('default', ['build', 'makeVInfo', 'updateVList'], (error, result) => {
+gulp.task('default', ['build', 'makeVInfo', 'updateVList', 'copyAssets'], (error, result) => {
     if(!error) console.log('build complete');
 });
 
@@ -94,4 +98,9 @@ gulp.task('updateVList', ['build', 'makeVInfo'],  endcall => {
 
         endcall();
     });
+});
+
+gulp.task('copyAssets', ['build'], endcall => {
+    exec(`cp -R ./src/assets ./dist/${ versionHash }/`);
+    endcall();
 });

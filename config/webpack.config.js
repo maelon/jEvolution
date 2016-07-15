@@ -9,7 +9,7 @@ module.exports = {
         'index': [ path.resolve(__dirname, '../src/index.js') ]
     },
     'output': {
-        'path': path.resolve(__dirname, './dist/[hash]'),
+        'path': path.resolve(__dirname, '../dist/[hash]'),
         'filename': '[name].js',
         'sourceMapFilename': '[name].js.map'
     },
@@ -22,7 +22,7 @@ module.exports = {
     'externals': {
     },
     'resolveLoader': {
-        'modulesDirectories': [path.resolve(__dirname, './node_modules')]
+        'modulesDirectories': [path.resolve(__dirname, '../node_modules')]
     },
     'module': {
         //preLoaders: [

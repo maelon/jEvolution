@@ -3,9 +3,12 @@
 const path = require('path');
 const webpack = require('webpack');
 const htmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 let config = require('./webpack.config.js');
+config.output = {
+    'path': path.resolve(__dirname, '../dist/[hash]'),
+    'filename': '[name].js'
+};
 config.devtool = false;
 config.plugins = config.plugins.concat([
     new webpack.optimize.UglifyJsPlugin({
