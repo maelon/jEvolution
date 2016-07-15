@@ -12,6 +12,7 @@ const webpackConfig = require('./config/webpack.build.config.js');
 const vlistPath = './dist/vlist.json';
 let versionHash = '';
 let versionTime = 0;
+const remoteURL = 'http://localhost:8000/';
 
 const getCacheFiles = (pwd) => {
     const cacheFiles = [];
@@ -94,6 +95,7 @@ gulp.task('updateVList', ['build', 'makeVInfo'],  endcall => {
         }
 
         vlist['latestHash'] = versionHash;
+        vlist['remoteURL'] = remoteURL;
         fs.writeFileSync(vlistPath, JSON.stringify(vlist, null, '\t'), 'utf8');
 
         endcall();
