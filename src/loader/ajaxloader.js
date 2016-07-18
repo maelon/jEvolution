@@ -14,7 +14,7 @@ class AjaxLoader {
     constructor(config) {
         if(config['url'] === undefined ||
            typeof config['url'] !== 'string' ||
-           config.['url'] === '' ||
+           config['url'] === '' ||
            !(/.(html|js|js\.map|css|json)$/i).test(config['url'])
           ) {
             throw new Error('Invalid ajax url');
@@ -23,6 +23,8 @@ class AjaxLoader {
         this._timeout = config['timeout'];
         this._success = undefined;
         this._fail = undefined;
+        this._loaded = false;
+        this._result = null;
     }
 
     get loadURL() {
@@ -45,6 +47,14 @@ class AjaxLoader {
         this._fail = fail;
     }
 
+    get loaded() {
+        return this._loaded;
+    }
+
+    get result() {
+        return this._result;
+    }
+
     start() {
         let xhr;
         if(window.XMLHttpRequest) {
@@ -58,6 +68,8 @@ class AjaxLoader {
             xhr.timeout = this._timeout || 0;
             xhr.onreadystatechange = e => {
                 if(xhr.readyState === 4) {
+                    this._loaded = true;
+                    this._result = xhr.responseText;
                     if(xhr.status === 200) {
                         this._success && typeof this._success === 'function' && this._success(xhr.responseText);
                     } else {

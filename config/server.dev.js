@@ -8,7 +8,7 @@ const config = require('./webpack.dev.config.js');
 
 const compiler = webpack(config);
 const server = new webpackDevServer(compiler, {
-    contentBase: path.resolve(__dirname, '../src/'),
+    contentBase: path.resolve(__dirname, '../'),
     noInfo: true,
     hot: true,
     publicPath: ''

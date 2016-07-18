@@ -19,10 +19,10 @@ module.exports = {
     'devtool': 'source-map',
     'resolve': {
         'alias': {
-            'loader': '../src/loader',
-            'mounter': '../src/mounter',
-            'store': '../src/store',
-            'updater': '../src/updater'
+            'loader': path.resolve(__dirname, '../src/loader'),
+            'mounter': path.resolve(__dirname, '../src/mounter'),
+            'store': path.resolve(__dirname, '../src/store'),
+            'updater': path.resolve(__dirname, '../src/updater')
         },
 		'extensions': ['', '.js']
 	},

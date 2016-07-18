@@ -12,7 +12,7 @@ const webpackConfig = require('./config/webpack.build.config.js');
 const vlistPath = './dist/vlist.json';
 let versionHash = '';
 let versionTime = 0;
-const remoteURL = 'http://localhost:8000/';
+const remoteURL = 'http://localhost:8000/work/';
 
 const getCacheFiles = (pwd) => {
     const cacheFiles = [];
