@@ -83,6 +83,7 @@ class Updater {
             } else if((/\.css$/i).test(s)) {
                 data['css'] === undefined && (data['css'] = {});
                 data['css'][s] = resource[s];
+            }
         }
         store.writeToBuffer(this._pageName, data);
     }
