@@ -14,6 +14,14 @@ class Store {
         throw new Error(`there is no data of page ${ pagename }`);
     }
 
+    getLastUpdateTime(pagename) {
+        const pageStoreStr = localdb.getItem(pagename);
+        if(pageStoreStr) {
+            return JSON.parse(pageStoreStr)['updateTime'];
+        }
+        throw new Error(`there is no data of page ${ pagename }`);
+    }
+
     getPageStorage(pagename) {
         const store = localdb.getItem(pagename);
         if(store) {
@@ -23,7 +31,17 @@ class Store {
     }
 
     writeToBuffer(pagename, data) {
-        this._writeToStorage(pagename, JSON.stringify(data));
+        const pageStoreStr = localdb.getItem(pagename);
+        if(pageStoreStr) {
+            const hash = JSON.parse(pageStoreStr)['buildHash'];
+            if(data['buildHash'] !== hash) {
+                data['updateTime'] = +new Date();
+                this._writeToStorage(pagename, JSON.stringify(data));
+            }
+        } else {
+            data['updateTime'] = +new Date();
+            this._writeToStorage(pagename, JSON.stringify(data));
+        }
     }
 
     _writeToStorage(pagename, data) {

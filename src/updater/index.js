@@ -4,25 +4,30 @@ import Loader from 'loader';
 import store from 'store';
 
 class Updater {
-    constructor(pagename, vlisturl) {
+    constructor(pagename, vlisturl, policy) {
         this._pageName = pagename;
         this._vlist_remoteURL = vlisturl;
+        this._policy = policy;
     }
 
     update() {
-        const loader = new Loader({ 'urls': [ this._vlist_remoteURL ] });
-        loader.onLoad = result => {
-            if(result[this._vlist_remoteURL]['state'] === 'success') {
-                const vlist = JSON.parse(result[this._vlist_remoteURL]['result']);
-                if(this._checkShouldUpdate(vlist['latestHash'])) {
-                    this._loadNewVersion(vlist);
+        if(this._policy && this._policy.shouldUpdateByTime(store.getLastUpdateTime(this._pageName))) {
+            const loader = new Loader({ 
+                'urls': [ this._vlist_remoteURL + '?rand=' + Math.random().toString().slice(2) ] 
+            });
+            loader.onLoad = result => {
+                if(result[this._vlist_remoteURL]['state'] === 'success') {
+                    const vlist = JSON.parse(result[this._vlist_remoteURL]['result']);
+                    if(this._checkShouldUpdate(vlist['latestHash'])) {
+                        this._loadNewVersion(vlist);
+                    } else {
+                    }
                 } else {
+                    console.log('get vlist failed');
                 }
-            } else {
-                console.log('get vlist failed');
-            }
-        };
-        loader.start();
+            };
+            loader.start();
+        }
     }
 
     _checkShouldUpdate(hash) {
@@ -33,7 +38,7 @@ class Updater {
     }
 
     _loadNewVersion(vlist) {
-        const vinfo_url = vlist['remoteURL'] + vlist['latestHash'] + '/vinfo.json';
+        const vinfo_url = vlist['remoteURL'] + vlist['latestHash'] + '/vinfo.json?rand=' + Math.random().toString().slice(2);
         const loader = new Loader({ 'urls': [ vinfo_url ] });
         loader.onLoad = result => {
             if(result[this._vlist_remoteURL]['state'] === 'success') {
