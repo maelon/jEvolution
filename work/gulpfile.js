@@ -59,6 +59,7 @@ gulp.task('makeVInfo', ['build'], endcall => {
     vinfo['buildVersion'] = '';
     vinfo['buildVersion'] = '';
     vinfo['updatePolicy'] = 'default';
+    vinfo['storePolicy'] = 'default';
     vinfo['cacheList'] = getCacheFiles(`./dist/${ versionHash }/`);
     fs.writeFileSync(`./dist/${ versionHash }/vinfo.json`, JSON.stringify(vinfo, null, '\t'), 'utf8');
     endcall();

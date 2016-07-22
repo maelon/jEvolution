@@ -1,6 +1,7 @@
 'use strict';
 
 import localdb from 'store/localdb';
+import storePolicy from 'store/storePolicy';
 
 class Store {
     constructor() {
@@ -30,22 +31,24 @@ class Store {
         return null;
     }
 
-    writeToBuffer(pagename, data) {
+    writeToBuffer(pagename, data, storepolicy) {
         const pageStoreStr = localdb.getItem(pagename);
         if(pageStoreStr) {
             const hash = JSON.parse(pageStoreStr)['buildHash'];
             if(data['buildHash'] !== hash) {
                 data['updateTime'] = +new Date();
-                this._writeToStorage(pagename, JSON.stringify(data));
+                this._writeToStorage(pagename, JSON.stringify(data), storepolicy || storePolicy);
             }
         } else {
             data['updateTime'] = +new Date();
-            this._writeToStorage(pagename, JSON.stringify(data));
+            this._writeToStorage(pagename, JSON.stringify(data), storepolicy || storePolicy);
         }
     }
 
-    _writeToStorage(pagename, data) {
-        localdb.setItem(pagename, data);
+    _writeToStorage(pagename, data, storepolicy) {
+        if(storepolicy && storepolicy.shouldStore()) {
+            localdb.setItem(pagename, data);
+        }
     }
 }
 

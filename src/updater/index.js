@@ -7,27 +7,25 @@ class Updater {
     constructor(pagename, vlisturl, policy) {
         this._pageName = pagename;
         this._vlist_remoteURL = vlisturl;
-        this._policy = policy;
+        this._defaultPolicy = policy;
     }
 
     update() {
-        if(this._policy && this._policy.shouldUpdateByTime(store.getLastUpdateTime(this._pageName))) {
-            const loader = new Loader({ 
-                'urls': [ this._vlist_remoteURL + '?rand=' + Math.random().toString().slice(2) ] 
-            });
-            loader.onLoad = result => {
-                if(result[this._vlist_remoteURL]['state'] === 'success') {
-                    const vlist = JSON.parse(result[this._vlist_remoteURL]['result']);
-                    if(this._checkShouldUpdate(vlist['latestHash'])) {
-                        this._loadNewVersion(vlist);
-                    } else {
-                    }
+        const loader = new Loader({ 
+            'urls': [ this._vlist_remoteURL + '?rand=' + Math.random().toString().slice(2) ] 
+        });
+        loader.onLoad = result => {
+            if(result[this._vlist_remoteURL]['state'] === 'success') {
+                const vlist = JSON.parse(result[this._vlist_remoteURL]['result']);
+                if(this._checkShouldUpdate(vlist['latestHash'])) {
+                    this._loadNewVersion(vlist);
                 } else {
-                    console.log('get vlist failed');
                 }
-            };
-            loader.start();
-        }
+            } else {
+                console.log('get vlist failed');
+            }
+        };
+        loader.start();
     }
 
     _checkShouldUpdate(hash) {
@@ -42,8 +40,19 @@ class Updater {
         const loader = new Loader({ 'urls': [ vinfo_url ] });
         loader.onLoad = result => {
             if(result[this._vlist_remoteURL]['state'] === 'success') {
+                const shouldUpdate = false;
                 const vinfo = JSON.parse(result[vinfo_url]['result']);
-                if(vinfo['buildHash'] === vlist['latestHash']) {
+                if(vinfo['updatePolicy'] === 'default') {
+                    if(this._defaultPolicy && this._defaultPolicy.shouldUpdateByTime(store.getLastUpdateTime(this._pageName))) {
+                        shouldUpdate = true;
+                    }
+                } else {
+                    const shouldUpdateByTime = window.eval(vinfo['updatePolicy']);
+                    if(shouldUpdateByTime(store.getLastUpdateTime(this._pageName))) {
+                        shouldUpdate = true;
+                    }
+                }
+                if(shouldUpdate && vinfo['buildHash'] === vlist['latestHash']) {
                     console.log(`get vinfo buildDate: ${ vinfo['buildDate'] } buildVersion: ${ vinfo['buildVersion'] }`);
                     const resourceList = [];
                     for(let i = 0; i < vinfo['cacheList'].length; i++) {
@@ -52,7 +61,7 @@ class Updater {
                     const resLoader = new Loader({ 'urls': [ resourceList ] });
                     resLoader.onLoad = result => {
                         if(result['success']) {
-                            this._writeToStoreBuffer(vinfo, result);
+                            this._writeToStoreBuffer(vinfo, result, vinfo['storePolicy']);
                         } else {
                             const errorList = [];
                             for(let s in result) {
@@ -65,7 +74,7 @@ class Updater {
                     }
                     resLoader.start();
                 } else {
-                    console.log('vinfo error hash version');
+                    console.log('update policy limit or vinfo error hash version');
                 }
             } else {
                 console.log(`get ${ vlist['latestHash' ]} vinfo failed`);
@@ -74,7 +83,7 @@ class Updater {
         loader.start();
     }
 
-    _writeToStoreBuffer(vinfo, resource) {
+    _writeToStoreBuffer(vinfo, resource, storepolicy) {
         const data = {};
         data['buildHash'] = vinfo['buildHash'];
         data['buildVersion'] = vinfo['buildVersion'];
@@ -90,7 +99,10 @@ class Updater {
                 data['css'][s] = resource[s];
             }
         }
-        store.writeToBuffer(this._pageName, data);
+        if(storepolicy) {
+            storepolicy = window.eval(storepolicy);
+        }
+        store.writeToBuffer(this._pageName, data, storepolicy);
     }
 }
 
