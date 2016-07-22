@@ -6,4 +6,4 @@ const storePolicy = {
     }
 };
 
-export default updatePolicy;
+export default storePolicy;
