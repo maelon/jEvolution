@@ -1,7 +1,8 @@
 {
 	"buildHash": "4c253f2c2f90d9fbe6cf",
-	"buildDate": 1468822729346,
+	"buildDate": 1469155473685,
 	"buildVersion": "",
+	"updatePolicy": "default",
 	"cacheList": [
 		"index.html",
 		"index.js"
