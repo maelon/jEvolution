@@ -1,0 +1,6 @@
+body {
+    background-color: #ccc;
+}
+p {
+    background-image: url('../assets/test.png');
+}

@@ -2,11 +2,11 @@
 
 import mounter from 'mounter';
 import Updater from 'updater';
-import updatePolocy from 'update/updatepolicy';
+import updatePolocy from 'updater/updatepolicy';
 
 const matchPageName = window.location.pathname.match(/\/(\w+)\.html$/);
 if(matchPageName && matchPageName.length > 1) {
-    const success = mounter.mountPage(matchPageName[1]);
+    const success = mounter.mountPage(document, matchPageName[1]);
     if(success) {
     } else {
         console.log('mount page failed');

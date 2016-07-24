@@ -12,7 +12,8 @@ config.entry['index'] = [
 ];
 config.output = {
     'path': path.resolve(__dirname, '../dev'),
-    'filename': '[name].[hash].js'
+    'filename': '[name].[hash].js',
+    'publicPath': ''
 };
 config.devtool = 'inline-source-map';
 config.plugins = config.plugins.concat([
@@ -20,7 +21,7 @@ config.plugins = config.plugins.concat([
     new htmlWebpackPlugin({
         'chunks': ['index'],
         'filename': 'index.html',
-        'template': path.resolve(__dirname, '../src/index.html'),
+        'template': path.resolve(__dirname, '../src/index.ejs'),
         'inject': true
     })
 ]);

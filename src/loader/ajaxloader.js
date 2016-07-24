@@ -15,7 +15,7 @@ class AjaxLoader {
         if(config['url'] === undefined ||
            typeof config['url'] !== 'string' ||
            config['url'] === '' ||
-           !(/.(html|js|js\.map|css|json)$/i).test(config['url'])
+           !(/.(html|js|js\.map|css|json)$/i).test(this._parseURL(config['url']).pathname)
           ) {
             throw new Error('Invalid ajax url');
         }
@@ -80,6 +80,21 @@ class AjaxLoader {
             xhr.open('GET', this._url, true);
             xhr.send();
         }
+    }
+
+    _parseURL(url) {
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        return {
+            'href': url,
+            'protocol': a.protocol,
+            'host': a.host,
+            'hostname': a.hostname,
+            'port': a.port,
+            'search': a.search,
+            'hash': a.hash,
+            'pathname': a.pathname
+        };
     }
 }
 

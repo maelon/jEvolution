@@ -46,7 +46,7 @@ module.exports = {
                 exclude: /(node_modules|bower_components)/,
                 loader: 'url',
                 query: {
-                    limit: 10000,
+                    limit: 1,
                     name: 'assets/[name].[ext]'
                 }
             },

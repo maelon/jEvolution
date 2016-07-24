@@ -69,7 +69,6 @@ class Loader {
 
     _callOnLoad() {
         if(this._onload && typeof this._onload === 'function') {
-            const result = {};
             for(let i = 0; i < this._loaders.length; i++) {
                 this._loadResult['success'] = true;
                 for(let s in this._loadResult) {
@@ -78,8 +77,8 @@ class Loader {
                         break;
                     }
                 }
-                this._onload(this._loadResult);
             }
+            this._onload(this._loadResult);
         }
     }
 

@@ -7,7 +7,8 @@ const htmlWebpackPlugin = require('html-webpack-plugin');
 let config = require('./webpack.config.js');
 config.output = {
     'path': path.resolve(__dirname, '../dist/[hash]'),
-    'filename': '[name].js'
+    'filename': '[name].js',
+    'publicPath': 'http://localhost:8000/work/dist/[hash]/'
 };
 config.devtool = false;
 config.plugins = config.plugins.concat([
@@ -20,7 +21,7 @@ config.plugins = config.plugins.concat([
     new htmlWebpackPlugin({
         'chunks': ['index'],
         'filename': 'index.html',
-        'template': path.resolve(__dirname, '../src/index.html'),
+        'template': path.resolve(__dirname, '../src/index.ejs'),
         'inject': true
     })
 ]);

@@ -12,7 +12,7 @@ const webpackConfig = require('./config/webpack.build.config.js');
 const vlistPath = './dist/vlist.json';
 let versionHash = '';
 let versionTime = 0;
-const remoteURL = 'http://localhost:8000/work/';
+const remoteURL = 'http://localhost:8000/work/dist/';
 
 const getCacheFiles = (pwd) => {
     const cacheFiles = [];
@@ -44,6 +44,9 @@ gulp.task('default', ['build', 'makeVInfo', 'updateVList', 'copyAssets'], (error
 
 gulp.task('build', endcall => {
     webpack(webpackConfig, (error, result) => {
+        if(error) {
+            console.log(error);
+        }
         versionHash = result.hash;
         versionTime = (new Date()).getTime();
         endcall();
