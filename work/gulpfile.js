@@ -14,6 +14,12 @@ let versionHash = '';
 let versionTime = 0;
 const remoteURL = 'http://localhost:8000/work/dist/';
 
+//由于url-loader使用file-loader处理css图片等文件publicPath的hash问题，此处处理之
+const handleCSSPublicPath = csspath => {
+    const content = fs.readFileSync(csspath, 'utf8');
+    fs.writeFileSync(csspath, content.replace('[hash]', versionHash), 'utf8');
+};
+
 const getCacheFiles = (pwd) => {
     const cacheFiles = [];
 
@@ -25,6 +31,9 @@ const getCacheFiles = (pwd) => {
                 if(stat.isFile()) {
                     if((/.(html|js(x|.map)?|css)$/i).test(files[i])) {
                         cacheFiles.push(files[i]);
+                        if((/.css$/i).test(files[i])) {
+                            handleCSSPublicPath(dir + files[i]);
+                        }
                     }
                 } else if(stat.isDirectory()){
                     iterateFiles(dir + files[i]);

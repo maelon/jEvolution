@@ -47,7 +47,8 @@ module.exports = {
                 loader: 'url',
                 query: {
                     limit: 1,
-                    name: 'assets/[name].[ext]'
+                    name: 'assets/[name].[ext]',
+                    publicPath: 'http://localhost:8000/work/dist/[hash]/'
                 }
             },
             {
