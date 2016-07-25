@@ -7,7 +7,7 @@ const htmlWebpackPlugin = require('html-webpack-plugin');
 let config = require('./webpack.config.js');
 config.output = {
     'path': path.resolve(__dirname, '../dist'),
-    'filename': '[name].js'
+    'filename': '[name].[hash].js'
 };
 config.devtool = false;
 config.plugins = config.plugins.concat([
